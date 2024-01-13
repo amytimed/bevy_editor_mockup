@@ -9,3 +9,8 @@ It's dual-licensed under the [MIT](LICENSE-MIT) and [Apache 2.0](LICENSE-APACHE)
 ## License
 
 `SPDX-License-Identifier: Apache-2.0 OR MIT`
+
+## Credits
+
+- Viewport image: [A relaxing 'tiny planet' city builder by Jos Feenstra (made with Bevy)](https://twitter.com/i_am_feenster)
+- Color palette inspiration: [Bevy Website](https://bevyengine.org/)
