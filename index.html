@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Welcome to the HTML version of this Bevy Editor mockup! It's stored all in one file since it's just a single page of HTML and CSS. -->
+
+    <meta charset="UTF-8">
+    <title>bevy_editor_mockup</title>
+
+    <style>
+        @font-face {
+            font-family: "Inter";
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url("Inter-Regular.woff2?v=4.0") format("woff2");
+        }
+
+        * {
+            font-family: "Inter", sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        *::selection {
+            background-color: #ffffff80;
+        }
+
+        :root,
+        html,
+        body {
+            height: 100%;
+        }
+
+        :root {
+            --panel-background: #232326;
+            --window-background: #39393e;
+            --page-background: #1d1d20;
+            --input-background: #18181a;
+            --icons-background: #7c7c87;
+            font-size: 12px;
+        }
+
+        html {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body {
+            background-color: var(--panel-background);
+            color: #fff;
+            padding: 1rem;
+
+            max-width: 45rem;
+        }
+
+        code {
+            background-color: var(--input-background);
+            border-radius: 0.5rem;
+            padding: 0.1rem 0.5rem;
+            font-size: 0.9rem;
+            font-family: monospace;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            margin: 2rem 0;
+        }
+
+        p {
+            margin: 1.5rem 0;
+        }
+
+        a {
+            color: #fff;
+        }
+
+        a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        .row {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            background-color: var(--window-background);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            width: 100%;
+            padding-right: 0.5rem;
+        }
+
+        .color {
+            background-color: var(--panel-background);
+            padding: 1rem;
+            margin: 0.5rem;
+            margin-right: 0;
+            border-radius: 0.5rem;
+            width: 10rem;
+            height: 10rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.1s ease-in-out;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .color.light {
+            color: #000;
+        }
+
+        .color.border {
+            outline: 2px solid var(--panel-background);
+        }
+
+        .color .popup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.1s ease-in-out;
+            border-radius: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .color .popup p {
+            margin: 0;
+        }
+
+        .color:hover .popup {
+            opacity: 1;
+        }
+
+        .color .popup span {
+            font-size: 0.75rem;
+            color: #ffffff80;
+            cursor: default;
+        }
+
+        .color.light .popup span {
+            color: #00000080;
+        }
+
+        .panel-container {
+            background-color: var(--window-background);
+            border-radius: 1rem;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .panel {
+            background-color: var(--panel-background);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        button {
+            background-color: var(--window-background);
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.3rem 1rem;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.04s ease-in-out;
+        }
+
+        button svg {
+            height: 1.5rem;
+            width: 1.5rem;
+        }
+
+        button:hover {
+            filter: brightness(1.2);
+        }
+
+        button:active {
+            filter: brightness(0.8);
+        }
+
+        .search {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        input {
+            background-color: var(--input-background);
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.1rem 0.8rem;
+            color: #fff;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 15rem;
+        }
+
+        input:focus {
+            outline: 2px solid var(--window-background);
+        }
+
+        .search input {
+            height: 2.3rem;
+            max-width: unset;
+        }
+
+        .search button {
+            margin-left: 0.3rem;
+            height: 2.3rem;
+            width: 2.3rem;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            fill: #fff;
+        }
+
+        .font-size {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        #font-size-minus,
+        #font-size-plus {
+            padding: 0.3rem 0.6rem;
+        }
+
+        #font-size-value {
+            margin: 0 0.5rem;
+        }
+
+        #font-size-reset {
+            padding: 0.3rem 0.6rem;
+            margin-left: 0.5rem;
+        }
+
+        .slider {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="number"] {
+            height: 2rem;
+        }
+
+        .slider input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            max-width: unset;
+            height: 0.5rem;
+            background: var(--window-background);
+            outline: none;
+            border-radius: 0.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: var(--icons-background);
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .slider input[type="range"]::-moz-range-thumb {
+            width: 1.5rem;
+            height: 1.5rem;
+            background: var(--icons-background);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            outline: none;
+        }
+
+        .slider input[type="number"] {
+            background-color: var(--input-background);
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.1rem 0.8rem;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 4rem;
+        }
+
+        .slider input[type="number"]:focus {
+            outline: 2px solid var(--window-background);
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        details {
+            margin-bottom: 0.5rem;
+        }
+
+        details summary {
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            -webkit-appearance: none;
+            appearance: none;
+            list-style: none;
+            user-select: none;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details summary .arrow {
+            display: inline-block;
+            margin-right: 0.7rem;
+            transform: rotate(-135deg);
+            transition: transform 0.1s ease-in-out, margin-bottom 0.1s ease-in-out;
+            /* 2 lines with border */
+            content: "";
+            width: 0.4rem;
+            height: 0.4rem;
+            border-right: 0.15rem solid #fff;
+            border-bottom: 0.15rem solid #fff;
+        }
+
+        summary .left {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        details summary .icon {
+            display: inline-block;
+            margin-right: 0.4rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            fill: #fff;
+        }
+
+        details[open] summary .arrow {
+            transform: rotate(45deg);
+            margin-bottom: 0.3rem;
+        }
+
+        details .content {
+            margin-left: calc(0.7rem + 0.4rem + 0.1rem);
+        }
+
+        details .item {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            gap: 0.5rem;
+            word-break: keep-all;
+            white-space: nowrap;
+        }
+
+        details .item .vec3 {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        details .item .vec3 input {
+            margin-right: 0.3rem;
+            width: 4rem;
+        }
+
+        details .item .slider {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .toggle {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: 0.4rem;
+            user-select: none;
+        }
+
+        .toggle input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle .checkbox {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: 1.4rem;
+            height: 1.4rem;
+            border-radius: 0.3rem;
+            background-color: var(--input-background);
+            cursor: pointer;
+            transition: background-color 0.1s ease-in-out;
+            margin-right: 0.3rem;
+        }
+
+        .toggle .checkbox svg {
+            height: 1.2rem;
+            width: 1.2rem;
+            fill: none;
+            transition: fill 0.1s ease-in-out;
+        }
+
+        .toggle input:checked+.checkbox {
+            background-color: var(--icons-background);
+        }
+
+        .toggle input:checked+.checkbox svg {
+            fill: #fff;
+        }
+
+        /* pressed toggle */
+        .toggle input:active+.checkbox {
+            background-color: var(--panel-background);
+        }
+
+        .toggle input:active+.checkbox svg {
+            fill: #fff;
+        }
+
+        /* not a real color picker */
+        .color-picker {
+            height: 2rem;
+            width: 10rem;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0.3rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+
+        .color-picker-dot {
+            height: 0.5rem;
+            width: 0.5rem;
+            flex-shrink: 0;
+            border-radius: 50%;
+            outline: 2px solid var(--input-background);
+            margin-right: 0.4rem;
+        }
+
+        summary .right .icon {
+            fill: var(--icons-background);
+            margin-left: -0.5rem;
+        }
+
+        summary .right {
+            margin-right: -0.4rem;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        summary .right .icon:hover {
+            filter: brightness(1.2);
+        }
+
+        .name {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .name .icon {
+            display: inline-block;
+            margin-right: 0.4rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            fill: #fff;
+        }
+
+        .name input {
+            height: 2.3rem;
+            margin-left: 0.3rem;
+            width: 100%;
+            max-width: 12rem;
+        }
+
+        .icon.custom {
+            fill: var(--window-background);
+        }
+
+        .bottom-button {
+            margin-top: 0.5rem;
+        }
+
+        .full-editor-concept-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .full-editor-concept-container img {
+            max-width: 95rem;
+            border-radius: 1rem;
+        }
+    </style>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- meta tags for Discord embed -->
+    <meta property="og:title" content="Bevy Editor Mockup">
+    <meta property="og:description"
+        content="An HTML+CSS mockup of a Bevy Editor, dual-licensed under Apache-2.0 and MIT.">
+    <meta property="og:image" content="https://asour8.github.io/bevy_editor_mockup/editor.png">
+    <meta property="og:url" content="https://asour8.github.io/bevy_editor_mockup/">
+    <meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body>
+    <h1>Bevy Editor Mockup</h1>
+    <p>An HTML+CSS mockup of a Bevy Editor, dual-licensed under Apache-2.0 and MIT.</p>
+    <p>The <code>font-size</code> is set to <code>12px</code> so it's closer to the font size an editor would likely
+        use. Since the entire CSS is made with <code>rem</code> units, you can change the font size of the page to try
+        different scaling:</p>
+    <div class="font-size">
+        <button id="font-size-minus">-</button>
+        <span id="font-size-value">12px</span>
+        <button id="font-size-plus">+</button>
+        <button id="font-size-reset">Reset</button>
+    </div>
+
+    <h2>Color Palette</h2>
+    <p>These colors are inspired by the <a href="bevyengine.org">Bevy Website</a> and <a
+            href="https://github.com/coreh/bevy-rfcs/blob/editor-design-system/rfcs/69-editor-design-system.md">coreh's
+            design system RFC</a>.
+
+    <div class="row">
+        <div class="color" style="background-color: #18181a;">
+            <div class="color-name">UI 01</div>
+            <div class="color-value">#18181a</div>
+            <div class="popup" style="background-color: #18181a;">
+                <p>Used for the background of input fields.</p>
+                <span>Click to copy hex</span>
+            </div>
+        </div>
+        <div class="color" style="background-color: #232326;">
+            <div class="color-name">UI 02</div>
+            <div class="color-value">#232326</div>
+            <div class="popup" style="background-color: #232326;">
+                <p>Used for the background of panels.</p>
+                <span>Click to copy hex</span>
+            </div>
+        </div>
+        <div class="color border" style="background-color: #39393e;">
+            <div class="color-name">UI 03</div>
+            <div class="color-value">#39393e</div>
+            <div class="popup" style="background-color: #39393e;">
+                <p>Used for the background of the window, for buttons, and for sub-panels.</p>
+                <span>Click to copy hex</span>
+            </div>
+        </div>
+        <div class="color" style="background-color: #7c7c87;">
+            <div class="color-name">UI 04</div>
+            <div class="color-value">#7c7c87</div>
+            <div class="popup" style="background-color: #7c7c87;">
+                <p>Used for icons on panels.</p>
+                <span>Click to copy hex</span>
+            </div>
+        </div>
+        <div class="color light" style="background-color: #ffffff;">
+            <div class="color-name">UI 05</div>
+            <div class="color-value">#ffffff</div>
+            <div class="popup" style="background-color: #ffffff;">
+                <p>Used for text and icons.</p>
+                <span>Click to copy hex</span>
+            </div>
+        </div>
+        <div class="color" style="background-color: #cc3b40;">
+            <div class="color-name">Error/Danger</div>
+            <div class="color-value">#cc3b40</div>
+            <div class="popup" style="background-color: #cc3b40;">
+                <p>Used for errors and dangerous actions.</p>
+                <span>Click to copy hex</span>
+            </div>
+        </div>
+        <div class="color light" style="background-color: #f8a34e;">
+            <div class="color-name">Warning</div>
+            <div class="color-value">#f8a34e</div>
+            <div class="popup" style="background-color: #f8a34e;">
+                <p>Used for warnings.</p>
+                <span>Click to copy hex</span>
+            </div>
+        </div>
+        <div class="color light" style="background-color: #4baf40;">
+            <div class="color-name">Success</div>
+            <div class="color-value">#4baf40</div>
+            <div class="popup" style="background-color: #4baf40;">
+                <p>Used for success.</p>
+                <span>Click to copy hex</span>
+            </div>
+        </div>
+        <div class="color light" style="background-color: #fcd34d;">
+            <div class="color-name">Light</div>
+            <div class="color-value">#fcd34d</div>
+            <div class="popup" style="background-color: #fcd34d;">
+                <p>Used to represent light-related things.</p>
+                <span>Click to copy hex</span>
+            </div>
+        </div>
+        <div class="color light" style="background-color: #10b981;">
+            <div class="color-name">Resource</div>
+            <div class="color-value">#10b981</div>
+            <div class="popup" style="background-color: #10b981;">
+                <p>Used to represent resource-related things.</p>
+                <span>Click to copy hex</span>
+            </div>
+        </div>
+        <div class="color light" style="background-color: #a156d6;">
+            <div class="color-name">Asset</div>
+            <div class="color-value">#a156d6</div>
+            <div class="popup" style="background-color: #a156d6;">
+                <p>Used to represent assets.</p>
+                <span>Click to copy hex</span>
+            </div>
+        </div>
+        <div class="color light" style="background-color: #ea7c45;">
+            <div class="color-name">Code</div>
+            <div class="color-value">#ea7c45</div>
+            <div class="popup" style="background-color: #ea7c45;">
+                <p>Used to represent resource-related things.</p>
+                <span>Click to copy hex</span>
+            </div>
+        </div>
+    </div>
+
+    <h2>UI Elements</h2>
+    <p>These are some standard UI elements like buttons and text fields.</p>
+
+    <div class="panel-container">
+        <div class="panel">
+            <button>Example Button</button>
+
+            <div class="search">
+                <input type="text" placeholder="Search" />
+                <button><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                        <path
+                            d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
+                    </svg></button>
+            </div>
+
+            <div class="slider">
+                <input type="range" min="0" max="10" value="3" />
+                <input type="number" min="0" max="10" value="3" />
+            </div>
+
+            <label for="toggle" class="toggle">
+                <input type="checkbox" id="toggle" checked />
+                <div class="checkbox">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+                    </svg>
+                </div>Toggle
+            </label>
+            <label for="toggle2" class="toggle">
+                <input type="checkbox" id="toggle2" />
+                <div class="checkbox">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+                    </svg>
+                </div>Toggle
+            </label>
+        </div>
+        <div class="panel" style="width: 50rem;">
+            <div class="name">
+                <div class="icon custom"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                    </svg></div>
+                <input type="text" placeholder="Name" value="Entity Name" />
+            </div>
+            <details>
+                <summary>
+                    <div class="left">
+                        <div class="arrow"></div>
+                        <div class="icon" style="fill: #5796e8;"><svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M12,2L16,6H13V13.85L19.53,17.61L21,15.03L22.5,20.5L17,21.96L18.53,19.35L12,15.58L5.47,19.35L7,21.96L1.5,20.5L3,15.03L4.47,17.61L11,13.85V6H8L12,2Z" />
+                            </svg></div>Global Transform
+                    </div>
+                    <div class="right">
+                        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+                            </svg></div>
+                    </div>
+                </summary>
+                <div class="content">
+                    <div class="item">
+                        <span>Cool Slider</span>
+                        <div class="slider">
+                            <input type="range" min="0" max="10" value="3" />
+                            <input type="number" min="0" max="10" value="3" />
+                        </div>
+                    </div>
+                </div>
+            </details>
+            <details open>
+                <summary>
+                    <div class="left">
+                        <div class="arrow"></div>
+                        <div class="icon" style="fill: #5796e8;"><svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M12,2L16,6H13V13.85L19.53,17.61L21,15.03L22.5,20.5L17,21.96L18.53,19.35L12,15.58L5.47,19.35L7,21.96L1.5,20.5L3,15.03L4.47,17.61L11,13.85V6H8L12,2Z" />
+                            </svg></div>Transform
+                    </div>
+                    <div class="right">
+                        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+                            </svg></div>
+                    </div>
+                </summary>
+                <div class="content">
+                    <div class="item">
+                        <span>Translation</span>
+                        <div class="vec3">
+                            <input type="number" value="0" />
+                            <input type="number" value="0" />
+                            <input type="number" value="0" />
+                        </div>
+                    </div>
+                </div>
+            </details>
+            <details open>
+                <summary>
+                    <div class="left">
+                        <div class="arrow"></div>
+                        <div class="icon" style="fill: #a156d6;"><svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M11,13.5V21.5H3V13.5H11M12,2L17.5,11H6.5L12,2M17.5,13C20,13 22,15 22,17.5C22,20 20,22 17.5,22C15,22 13,20 13,17.5C13,15 15,13 17.5,13Z" />
+                            </svg></div>Sprite
+                    </div>
+                    <div class="right">
+                        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+                            </svg></div>
+                    </div>
+                </summary>
+                <div class="content">
+                    <div class="item">
+                        <span>Color</span>
+                        <div class="color-picker" style="background-color: #ffffff;">
+                            <div class="color-picker-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+            <details open>
+                <summary>
+                    <div class="left">
+                        <div class="arrow"></div>
+                        <div class="icon" style="fill: #fcd34d;"><svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M12,6A6,6 0 0,1 18,12C18,14.22 16.79,16.16 15,17.2V19A1,1 0 0,1 14,20H10A1,1 0 0,1 9,19V17.2C7.21,16.16 6,14.22 6,12A6,6 0 0,1 12,6M14,21V22A1,1 0 0,1 13,23H11A1,1 0 0,1 10,22V21H14M20,11H23V13H20V11M1,11H4V13H1V11M13,1V4H11V1H13M4.92,3.5L7.05,5.64L5.63,7.05L3.5,4.93L4.92,3.5M16.95,5.63L19.07,3.5L20.5,4.93L18.37,7.05L16.95,5.63Z" />
+                            </svg></div>Point Light
+                    </div>
+                    <div class="right">
+                        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+                            </svg></div>
+                    </div>
+                </summary>
+                <div class="content">
+                    <div class="item">
+                        <span>Color</span>
+                        <div class="color-picker" style="background-color: #ff6e6e;">
+                            <div class="color-picker-dot"></div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <span>Intensity</span>
+                        <div class="slider">
+                            <input type="range" min="0" max="10" value="3" />
+                            <input type="number" min="0" max="10" value="3" />
+                        </div>
+                    </div>
+                </div>
+            </details>
+            <details open>
+                <summary>
+                    <div class="left">
+                        <div class="arrow" style="opacity: 0;"></div>
+                        <div class="icon custom"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                            </svg></div>Custom Component
+                    </div>
+                    <div class="right">
+                        <div class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M6 2C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H10V20.1L20 10.1V8L14 2H6M13 3.5L18.5 9H13V3.5M20.1 13C20 13 19.8 13.1 19.7 13.2L18.7 14.2L20.8 16.3L21.8 15.3C22 15.1 22 14.7 21.8 14.5L20.5 13.2C20.4 13.1 20.3 13 20.1 13M18.1 14.8L12 20.9V23H14.1L20.2 16.9L18.1 14.8Z" />
+                            </svg>
+                        </div>
+                        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+                            </svg></div>
+                    </div>
+                </summary>
+            </details>
+            <button class="bottom-button">Add Component</button>
+        </div>
+    </div>
+
+    <h2>Full Concept Image</h2>
+
+    <div class="full-editor-concept-container">
+        <img src="editor.png" alt="Editor Concept" />
+    </div>
+
+    <h2>Thanks for checking this out!</h2>
+
+    <p>I'd love to hear your feedback on this mockup! You can @-mention me in the Bevy Discord with
+        <code>&lt;@427114333000957952&gt;</code>.
+
+    <div style="height: 10rem;"></div>
+
+    <script>
+        const colors = document.querySelectorAll(".color");
+        colors.forEach((color) => {
+            color.addEventListener("click", () => {
+                const value = color.querySelector(".color-value").innerText;
+                navigator.clipboard.writeText(value);
+                // select the span element
+                const span = color.querySelector(".popup span");
+                // change the text to "copied!"
+                span.innerText = "Copied!";
+                setTimeout(() => {
+                    // change the text back to "click to copy"
+                    span.innerText = "Click to copy hex";
+                }, 1000);
+            });
+        });
+
+        const fontSizeValue = document.getElementById("font-size-value");
+        const fontSizeMinus = document.getElementById("font-size-minus");
+        const fontSizePlus = document.getElementById("font-size-plus");
+        const fontSizeReset = document.getElementById("font-size-reset");
+
+        let fontSize = 12;
+
+        fontSizeMinus.addEventListener("click", () => {
+            fontSize -= 1;
+            fontSizeValue.innerText = fontSize + "px";
+            document.documentElement.style.fontSize = fontSize + "px";
+        });
+
+        fontSizePlus.addEventListener("click", () => {
+            fontSize += 1;
+            fontSizeValue.innerText = fontSize + "px";
+            document.documentElement.style.fontSize = fontSize + "px";
+        });
+
+        fontSizeReset.addEventListener("click", () => {
+            fontSize = 12;
+            fontSizeValue.innerText = fontSize + "px";
+            document.documentElement.style.fontSize = fontSize + "px";
+        });
+
+        const sliders = document.querySelectorAll(".slider");
+        sliders.forEach((slider) => {
+            const range = slider.querySelector("input[type=range]");
+            const number = slider.querySelector("input[type=number]");
+
+            range.addEventListener("input", () => {
+                number.value = range.value;
+            });
+
+            number.addEventListener("input", () => {
+                range.value = number.value;
+            });
+        });
+    </script>
+</body>
+
+</html>
