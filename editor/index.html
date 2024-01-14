@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Welcome to the HTML version of this Bevy Editor mockup! -->
+
+    <meta charset="UTF-8">
+    <title>Bevy Editor</title>
+
+    <link rel="icon" href="../favicon.png" type="image/png" />
+    <link rel="shortcut icon" href="../favicon.png" type="image/png" />
+
+    <link rel="stylesheet" href="../index.css">
+
+    <style>
+        * {
+            /* To make this feel like a real app, we disable selection by default, and re-enable it for certain elements. */
+            user-select: none;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="password"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="url"],
+        textarea {
+            user-select: text;
+        }
+
+        :root {
+            background: var(--window-background);
+            color: #fff;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            max-width: 100vw;
+            max-height: 100vh;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: 0.5rem;
+            gap: 0.5rem;
+        }
+
+        .panel {
+            margin-top: 2.2rem;
+        }
+
+        .app {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 27rem 1fr 27rem;
+            grid-template-rows: 3.5rem 1fr 20rem 20rem;
+            gap: 0.5rem;
+        }
+
+        .header {
+            /* spans all 3 columns */
+            grid-column: span 3;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0.5rem 0.75rem;
+            margin-top: 0;
+        }
+
+        .bottom {
+            /* spans all 3 columns */
+            grid-column: span 3;
+        }
+
+        .header>.logo {
+            height: 100%;
+            object-fit: contain;
+            margin-right: 0.8rem;
+        }
+
+        .center {
+            position: relative;
+            /* span 2 rows */
+            grid-row: span 2;
+        }
+
+        .right {
+            grid-row: span 2;
+        }
+
+        .viewport-image {
+            object-fit: cover;
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            width: calc(100% - 1rem);
+            height: calc(100% - 1rem);
+            border-radius: 0.3rem;
+        }
+
+        .footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            position: relative;
+        }
+
+        .left-upper,
+        .left-lower {
+            padding: 0.5rem;
+        }
+
+        .tab-list {
+            /* panels are position relative and have a space at the top (the margin we applied earlier), this tab list can thus be positioned absolutely at the top of the panel */
+            position: absolute;
+            top: -2.2rem;
+            left: 0;
+            width: 100%;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0.5rem;
+            padding: 0 0.5rem;
+            padding-bottom: 0;
+        }
+
+        .tab {
+            padding: 0 0.8rem;
+            padding-bottom: 0.2rem;
+            border-radius: 0.3rem;
+            height: 100%;
+            background: var(--panel-background);
+            color: var(--panel-text);
+            opacity: 0.3;
+            transform: translateY(0.1rem);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .tab:hover {
+            opacity: 0.7;
+        }
+
+        .tab.active {
+            outline: none;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tab:active {
+            opacity: 1;
+        }
+
+        .icon.close {
+            width: 1.1rem;
+            height: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.5rem;
+            fill: var(--window-background);
+        }
+
+        .icon.close:hover {
+            fill: var(--icons-background);
+        }
+
+        .icon.close:active {
+            fill: var(--input-background);
+        }
+
+        .icon.new-tab {
+            width: 1.1rem;
+            height: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(45deg);
+            margin-left: 0.2rem;
+            margin-bottom: 0.2rem;
+            fill: var(--icons-background);
+        }
+
+        .icon.new-tab:hover {
+            fill: #fff;
+        }
+
+        .icon.new-tab:active {
+            fill: var(--panel-background);
+        }
+
+        .header>span {
+            margin-left: 0.5rem;
+            margin-right: 0.5rem;
+            font-weight: 500;
+            opacity: 0.5;
+        }
+
+        .header>span:hover {
+            opacity: 1;
+        }
+
+        .header>span:active {
+            opacity: 0.5;
+        }
+
+        .search {
+            margin-top: 0;
+        }
+
+        .command-palette-container {
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .command-palette {
+            pointer-events: all;
+            height: 2.3rem;
+            max-width: 28rem;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .command-palette:focus {
+            cursor: text;
+        }
+
+        details>.content>.item:last-child>details {
+            margin-bottom: 0;
+        }
+
+        .hierarchy details {
+            margin-bottom: 0.2rem;
+        }
+
+        .hierarchy summary {
+            padding: 0.1rem 0.5rem;
+            margin: -0.1rem -0.5rem;
+            margin-bottom: 0.1rem;
+        }
+
+        .hierarchy {
+            padding: 0.5rem;
+            padding-top: 1rem;
+        }
+
+        .hierarchy details.active>summary {
+            background: var(--window-background);
+            border-radius: 0.3rem;
+        }
+
+        .viewport {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            bottom: 0.5rem;
+            right: 0.5rem;
+            overflow: hidden;
+            border-radius: 0.3rem;
+            background: #000;
+        }
+
+        .viewport-canvas {
+            overflow: hidden;
+        }
+
+        .files {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: flex-start;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            padding-left: 0;
+        }
+
+        .file {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 7rem;
+            height: 7rem;
+            border-radius: 0.5rem;
+            gap: 0.5rem;
+            padding: 0 0.5rem;
+            word-break: break-word;
+            text-align: center;
+        }
+
+        .file:hover {
+            background: var(--window-background);
+        }
+
+        .file-icon {
+            height: 4.5rem;
+        }
+
+        .breadcrumbs {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumbs .icon {
+            margin-right: 0.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .breadcrumbs .icon img,
+        .breadcrumbs .icon svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .breadcrumbs .arrow {
+            display: inline-block;
+            margin-left: 0.5rem;
+            margin-right: 0.7rem;
+            transform: rotate(-45deg);
+            transition: transform 0.1s ease-in-out, margin-bottom 0.1s ease-in-out;
+            /* 2 lines with border */
+            content: "";
+            width: 0.4rem;
+            height: 0.4rem;
+            border-right: 0.15rem solid var(--icons-background);
+            border-bottom: 0.15rem solid var(--icons-background);
+        }
+
+        details summary {
+            word-break: keep-all;
+            white-space: nowrap;
+        }
+
+        .crate {
+            margin-left: 0.5rem;
+            opacity: 0.5;
+        }
+
+        .play-options {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            margin-left: 2rem;
+        }
+
+        .play-options button {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            fill: #fff;
+        }
+
+        .play-options button:hover {
+            fill: var(--icons-background);
+        }
+
+        .play-options button:active {
+            fill: var(--panel-background);
+        }
+
+        .play-options button svg {
+            width: 1.8rem;
+            height: 1.8rem;
+        }
+
+        .logs {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+        }
+
+        .logs .errors,
+        .logs .warnings {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.2rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.3rem;
+            background: var(--panel-background);
+            color: var(--panel-text);
+        }
+
+        .logs .errors:active,
+        .logs .warnings:active {
+            opacity: 0.5;
+        }
+
+        .logs .errors .icon,
+        .logs .warnings .icon {
+            width: 1.4rem;
+            height: 1.4rem;
+            fill: var(--panel-text);
+        }
+
+        .logs .errors .icon {
+            fill: #cc3b40;
+        }
+
+        .logs .warnings .icon {
+            fill: #f8a34e;
+        }
+
+        .footer .left {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 1rem;
+        }
+
+        .center-container {
+            position: absolute;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .time-scale {
+            height: 2.5rem;
+            width: 5rem;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="panel header">
+            <img src="../favicon.png" class="logo" alt="Bevy Logo" />
+            <span>File</span>
+            <span>Edit</span>
+            <span>View</span>
+            <span>Window</span>
+            <span>Help</span>
+            <div class="play-options">
+                <button>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                        <path d="M320-200v-560l440 280-440 280Z" />
+                    </svg>
+                </button>
+                <button>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                        <path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z" />
+                    </svg>
+                </button>
+                <button>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                        <path d="M660-240v-480h80v480h-80Zm-440 0v-480l360 240-360 240Z" />
+                    </svg>
+                </button>
+                <div class="slider time-scale" data-suffix="x" data-min="0.05" data-max="2" data-step="0.1"
+                    data-value="1">
+                    <div class="fill"></div>
+                    <span class="value">0.5x</span>
+                </div>
+            </div>
+            <div class="logs">
+                <div class="errors">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M13 13H11V7H13M11 15H13V17H11M15.73 3H8.27L3 8.27V15.73L8.27 21H15.73L21 15.73V8.27L15.73 3Z" />
+                        </svg>
+                    </div>
+                    <span>5</span>
+                </div>
+                <div class="warnings">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M13 14H11V9H13M13 18H11V16H13M1 21H23L12 2L1 21Z" />
+                        </svg>
+                    </div>
+                    <span>2</span>
+                </div>
+            </div>
+            <div class="command-palette-container">
+                <input type="text" placeholder="Command Palette" class="command-palette" />
+            </div>
+        </div>
+        <div class="panel left-upper">
+            <div class="tab-list">
+                <div class="tab active">
+                    Hierarchy
+                    <div class="icon close">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="tab">
+                    Resources
+                    <div class="icon close">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="icon new-tab">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path
+                            d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="search">
+                <input type="text" placeholder="Search" />
+                <button><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                        <path
+                            d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
+                    </svg></button>
+            </div>
+            <div class="hierarchy">
+                <details open class="active">
+                    <summary>
+                        <div class="left">
+                            <div class="arrow"></div>
+                            <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12,1C10.89,1 10,1.9 10,3C10,4.11 10.89,5 12,5C13.11,5 14,4.11 14,3A2,2 0 0,0 12,1M10,6C9.73,6 9.5,6.11 9.31,6.28H9.3L4,11.59L5.42,13L9,9.41V22H11V15H13V22H15V9.41L18.58,13L20,11.59L14.7,6.28C14.5,6.11 14.27,6 14,6" />
+                                </svg></div>Player
+                        </div>
+                    </summary>
+                    <div class="content">
+                        <details open>
+                            <summary>
+                                <div class="left">
+                                    <div class="arrow" style="opacity: 0;"></div>
+                                    <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                                            <path
+                                                d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h480q33 0 56.5 23.5T720-720v180l160-160v440L720-420v180q0 33-23.5 56.5T640-160H160Z" />
+                                        </svg></div>Camera3d
+                                </div>
+                            </summary>
+                        </details>
+                    </div>
+                </details>
+                <details open>
+                    <summary>
+                        <div class="left">
+                            <div class="arrow" style="opacity: 0;"></div>
+                            <div class="icon custom"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                                </svg></div>Floor
+                        </div>
+                    </summary>
+                </details>
+                <details>
+                    <summary>
+                        <div class="left">
+                            <div class="arrow"></div>
+                            <div class="icon custom"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                                </svg></div>Wall
+                        </div>
+                    </summary>
+                    <div class="content">
+                        <details open>
+                            <summary>
+                                <div class="left">
+                                    <div class="arrow" style="opacity: 0;"></div>
+                                    <div class="icon custom"><svg xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24">
+                                            <path
+                                                d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                                        </svg></div>Particle Emitter
+                                </div>
+                            </summary>
+                        </details>
+                    </div>
+                </details>
+            </div>
+        </div>
+        <div class="panel center">
+            <div class="tab-list">
+                <div class="tab active">
+                    Viewport
+                    <div class="icon close">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="icon new-tab">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path
+                            d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                    </svg>
+                </div>
+            </div>
+            <!--<img src="https://bevyengine.org/news/bevy-0-12/cover.gif" class="viewport-image" alt="Bevy Editor" />-->
+            <div class="viewport">
+                <canvas id="bevy" class="viewport-canvas"></canvas>
+            </div>
+        </div>
+        <div class="panel right">
+            <div class="tab-list">
+                <div class="tab active">
+                    Inspector
+                    <div class="icon close">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="icon new-tab">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path
+                            d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="name">
+                <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path
+                            d="M12,1C10.89,1 10,1.9 10,3C10,4.11 10.89,5 12,5C13.11,5 14,4.11 14,3A2,2 0 0,0 12,1M10,6C9.73,6 9.5,6.11 9.31,6.28H9.3L4,11.59L5.42,13L9,9.41V22H11V15H13V22H15V9.41L18.58,13L20,11.59L14.7,6.28C14.5,6.11 14.27,6 14,6" />
+                    </svg></div>
+                <input type="text" placeholder="Name" value="Player" />
+            </div>
+            <details>
+                <summary>
+                    <div class="left">
+                        <div class="arrow"></div>
+                        <div class="icon" style="fill: #5796e8;"><svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M12,2L16,6H13V13.85L19.53,17.61L21,15.03L22.5,20.5L17,21.96L18.53,19.35L12,15.58L5.47,19.35L7,21.96L1.5,20.5L3,15.03L4.47,17.61L11,13.85V6H8L12,2Z" />
+                            </svg></div>Global Transform
+                    </div>
+                    <div class="right">
+                        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+                            </svg></div>
+                    </div>
+                </summary>
+                <div class="content">
+                    <div class="item">
+                        <span>Cool Slider</span>
+                        <div class="slider">
+                            <div class="fill"></div>
+                            <span class="value">50</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
+            <details open>
+                <summary>
+                    <div class="left">
+                        <div class="arrow"></div>
+                        <div class="icon" style="fill: #5796e8;"><svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M12,2L16,6H13V13.85L19.53,17.61L21,15.03L22.5,20.5L17,21.96L18.53,19.35L12,15.58L5.47,19.35L7,21.96L1.5,20.5L3,15.03L4.47,17.61L11,13.85V6H8L12,2Z" />
+                            </svg></div>Transform
+                    </div>
+                    <div class="right">
+                        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+                            </svg></div>
+                    </div>
+                </summary>
+                <div class="content">
+                    <div class="item">
+                        <span>Translation</span>
+                        <div class="vec3">
+                            <input type="number" value="0" />
+                            <input type="number" value="0" />
+                            <input type="number" value="0" />
+                        </div>
+                    </div>
+                </div>
+            </details>
+            <details open>
+                <summary>
+                    <div class="left">
+                        <div class="arrow"></div>
+                        <div class="icon" style="fill: #a156d6;"><svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M11,13.5V21.5H3V13.5H11M12,2L17.5,11H6.5L12,2M17.5,13C20,13 22,15 22,17.5C22,20 20,22 17.5,22C15,22 13,20 13,17.5C13,15 15,13 17.5,13Z" />
+                            </svg></div>Sprite
+                    </div>
+                    <div class="right">
+                        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+                            </svg></div>
+                    </div>
+                </summary>
+                <div class="content">
+                    <div class="item">
+                        <span>Color</span>
+                        <div class="color-picker" style="background-color: #ffffff;">
+                            <div class="color-picker-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+            <details open>
+                <summary>
+                    <div class="left">
+                        <div class="arrow"></div>
+                        <div class="icon" style="fill: #fcd34d;"><svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M12,6A6,6 0 0,1 18,12C18,14.22 16.79,16.16 15,17.2V19A1,1 0 0,1 14,20H10A1,1 0 0,1 9,19V17.2C7.21,16.16 6,14.22 6,12A6,6 0 0,1 12,6M14,21V22A1,1 0 0,1 13,23H11A1,1 0 0,1 10,22V21H14M20,11H23V13H20V11M1,11H4V13H1V11M13,1V4H11V1H13M4.92,3.5L7.05,5.64L5.63,7.05L3.5,4.93L4.92,3.5M16.95,5.63L19.07,3.5L20.5,4.93L18.37,7.05L16.95,5.63Z" />
+                            </svg></div>Point Light
+                    </div>
+                    <div class="right">
+                        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+                            </svg></div>
+                    </div>
+                </summary>
+                <div class="content">
+                    <div class="item">
+                        <span>Color</span>
+                        <div class="color-picker" style="background-color: #ff6e6e;">
+                            <div class="color-picker-dot"></div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <span>Intensity</span>
+                        <div class="slider">
+                            <div class="fill"></div>
+                            <span class="value">64</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
+            <details open>
+                <summary>
+                    <div class="left">
+                        <div class="arrow" style="opacity: 0;"></div>
+                        <div class="icon custom"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+                            </svg></div>Custom Component
+                    </div>
+                    <div class="right">
+                        <div class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M6 2C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H10V20.1L20 10.1V8L14 2H6M13 3.5L18.5 9H13V3.5M20.1 13C20 13 19.8 13.1 19.7 13.2L18.7 14.2L20.8 16.3L21.8 15.3C22 15.1 22 14.7 21.8 14.5L20.5 13.2C20.4 13.1 20.3 13 20.1 13M18.1 14.8L12 20.9V23H14.1L20.2 16.9L18.1 14.8Z" />
+                            </svg>
+                        </div>
+                        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+                            </svg></div>
+                    </div>
+                </summary>
+            </details>
+            <button class="bottom-button">Add Component</button>
+        </div>
+        <div class="panel left-lower">
+            <div class="tab-list">
+                <div class="tab active">
+                    Features
+                    <div class="icon close">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="icon new-tab">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path
+                            d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="search">
+                <button class="add"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                    </svg></button>
+                <input type="text" placeholder="Search" />
+                <button><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                        <path
+                            d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
+                    </svg></button>
+            </div>
+            <div class="hierarchy">
+                <label for="toggle" class="toggle">
+                    <input type="checkbox" id="toggle" checked />
+                    <div class="checkbox">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+                        </svg>
+                    </div>Cool Feature
+                </label>
+                <label for="toggle" class="toggle">
+                    <input type="checkbox" id="toggle" />
+                    <div class="checkbox">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+                        </svg>
+                    </div>Good Gameplay
+                </label>
+            </div>
+        </div>
+        <div class="panel bottom">
+            <div class="tab-list">
+                <div class="tab active">
+                    Assets
+                    <div class="icon close">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="tab">
+                    Console
+                    <div class="icon close">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="tab">
+                    Project Settings
+                    <div class="icon close">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="icon new-tab">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path
+                            d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="breadcrumbs">
+                <div class="icon"><img src="./folder.svg" /></div>
+                <span>my_game</span>
+                <div class="arrow"></div>
+                <div class="icon"><img src="./folder.svg" /></div>
+                <span>assets</span>
+                <div class="arrow"></div>
+            </div>
+            <div class="files">
+                <div class="file">
+                    <img class="file-icon" src="./folder.svg" />
+                    <span class="file-name">dialogue</span>
+                </div>
+                <div class="file">
+                    <img class="file-icon" src="./folder.svg" />
+                    <span class="file-name">levels</span>
+                </div>
+                <div class="file">
+                    <img class="file-icon" src="./folder.svg" />
+                    <span class="file-name">sounds</span>
+                </div>
+                <div class="file">
+                    <img class="file-icon" src="./folder.svg" />
+                    <span class="file-name">textures</span>
+                </div>
+
+
+                <!--
+                <div class="file">
+                    <img class="file-icon" src="./code.svg" />
+                    <span class="file-name">lib.rs</span>
+                </div>
+                <div class="file">
+                    <img class="file-icon" src="./code.svg" />
+                    <span class="file-name">main.rs</span>
+                </div>
+            -->
+                <div class="file">
+                    <img class="file-icon" src="./gabe.png" />
+                    <span class="file-name">photo.png</span>
+                </div>
+                <div class="file">
+                    <img class="file-icon" src="./midi.svg" />
+                    <span class="file-name">song.midi</span>
+                </div>
+                <div class="file">
+                    <img class="file-icon" src="../favicon.png" />
+                    <span class="file-name">world.bsn</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="left"><span>Bevy Editor v0.1.0 Alpha (a9df95c)</span><span>Rust v1.74.1 (a28077b28)</span>
+        </div>
+        <div class="center-container"><span>my_game v0.1.0 (7e7e14d)</span></div>
+        <div class="right">
+            <a href="../">Home</a>
+        </div>
+    </div>
+
+    <script src="../sliders.js"></script>
+
+    <script type="module">
+        import init from 'https://bevy-webgl2-examples.pages.dev/3D%20Rendering/3d-viewport-to-world/wasm_example.js';
+
+        const canvasEl = document.getElementById('bevy');
+        // on resize, set the canvas size to .viewport size
+        let viewportEl = document.querySelector('.viewport');
+        const resizeCanvas = () => {
+            canvasEl.width = viewportEl.clientWidth;
+            canvasEl.height = viewportEl.clientHeight;
+        };
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        window.bevyLoadingBarFetch = (progress) => {
+            console.log('progress', progress);
+        };
+        // create webassembly.module for https://bevy-webgl2-examples.pages.dev/3D%20Rendering/3d-viewport-to-world/wasm_example_bg.wasm so we can pass it to init
+
+        async function createWasmModule(bytes) {
+            return await WebAssembly.compile(bytes);
+        }
+
+        let setup = async () => {
+            let res = await fetch('https://bevy-webgl2-examples.pages.dev/3D%20Rendering/3d-viewport-to-world/wasm_example_bg.wasm');
+            let bytes = await res.arrayBuffer();
+            let module = await createWasmModule(bytes);
+            init(module).catch((error) => {
+                if (!error.message.startsWith("Using exceptions for control flow, don't mind me. This isn't actually an error!")) {
+                    throw error;
+                }
+            });
+        };
+        setup();
+
+    </script>
+</body>
+
+</html>
