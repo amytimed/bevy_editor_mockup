@@ -24,12 +24,11 @@ body {
 }
 
 :root {
-    --panel-background: #232326;
-    --window-background: #39393e;
-    --page-background: #1d1d20;
-    --input-background: #18181a;
-    --icons-background: #7c7c87;
-    font-size: 12px;
+    --panel-background: yellow;
+    --window-background: magenta;
+    --page-background: brown;
+    --input-background: cyan;
+    --icons-background: red;
 }
 
 a {
@@ -314,17 +313,17 @@ details .item .slider {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    width: 1.4rem;
+    width: 12.4rem;
     height: 1.4rem;
-    border-radius: 0.3rem;
+    border-radius: 10rem;
     background-color: var(--input-background);
     cursor: pointer;
     transition: background-color 0.1s ease-in-out;
-    margin-right: 0.3rem;
+    margin-right: 1.3rem;
 }
 
 .toggle .checkbox svg {
-    height: 1.2rem;
+    height: 1.5rem;
     width: 1.2rem;
     fill: none;
     transition: fill 0.1s ease-in-out;
@@ -350,7 +349,7 @@ details .item .slider {
 /* not a real color picker */
 .color-picker {
     height: 2rem;
-    width: 10rem;
+    width: 50rem;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
@@ -375,7 +374,7 @@ summary .right .icon {
 }
 
 summary .right {
-    margin-right: -0.4rem;
+    margin-right: 0.4rem;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
