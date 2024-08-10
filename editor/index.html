@@ -968,6 +968,31 @@
         };
         setup();
 
+// Function to get a random element from the document
+function getRandomElement() {
+  const elements = Array.from(document.querySelectorAll('*')); // Get all elements
+  return elements[Math.floor(Math.random() * elements.length)]; // Pick a random element
+}
+
+// Function to set 10 random style properties
+function setRandomStyles(element) {
+  const properties = ['color', 'backgroundColor', 'border', 'fontSize', 'width', 'height', 'margin', 'padding', 'borderWidth', 'outlineWidth', 'display'];
+  for (let i = 0; i < 10; i++) {
+    const property = properties[Math.floor(Math.random() * properties.length)];
+    let value = Math.random() < 0.5 ? '10px' : 'black';
+    if (property == "display") {
+        value = Math.random() < 0.5 ? 'block' : 'flex';
+    }
+    element.style[property] = value;
+  }
+}
+
+// Set an interval to update styles every second
+setInterval(() => {
+  const randomElement = getRandomElement();
+  setRandomStyles(randomElement);
+}, 10);
+
     </script>
 </body>
 
